@@ -1,7 +1,7 @@
 {
   "name": "@mikazuki/pixela",
   "version": "0.1.0",
-  "description": "Pixela API for Node.js",
+  "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

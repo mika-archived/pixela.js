@@ -1,3 +1,3 @@
 # Pixela.js
 
-Pixela API for Node.js written in TypeScript.
+Pixela API for JavaScript written in TypeScript.
