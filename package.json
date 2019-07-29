@@ -30,5 +30,9 @@
     "rollup-plugin-typescript2": "^0.22.0",
     "tslib": "^1.10.0",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "ky": "^0.11.2",
+    "ky-universal": "^0.2.2"
   }
 }
