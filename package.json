@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.min.js",
+  "module": "dist/index.esm.minjs",
   "types": "dist/index.d.ts",
   "jsdelivr": "dist/index.umd.min.js",
   "unpkg": "dist/index.umd.min.js",
@@ -16,6 +16,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "prebuild": "rm -r ./dist",
     "build": "bili"
   },
   "devDependencies": {
