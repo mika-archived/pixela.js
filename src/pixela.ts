@@ -1,5 +1,7 @@
 import ky from "ky-universal";
 
+const PIXELA_VERSION = "0.1.0";
+
 type Color = "shibafu" | "momiji" | "sora" | "ichou" | "ajisai" | "kuro";
 type Dictionary = { [key: string]: string | number };
 type DisplayMode = "short" | "line";
@@ -41,7 +43,7 @@ export class Pixela {
   private readonly client: typeof ky;
 
   public constructor(username: string, token: string) {
-    this.headers = { "User-Agent": "Pixela.js", "X-USER-TOKEN": token };
+    this.headers = { "User-Agent": `Pixela.js/${PIXELA_VERSION}`, "X-USER-TOKEN": token };
     this.username = username;
     this.token = token;
     this.client = ky.create({ prefixUrl: "https://pixe.la" });
