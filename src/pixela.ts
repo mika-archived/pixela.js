@@ -102,7 +102,7 @@ export class Pixela {
   }
 
   // prettier-ignore
-  public async updateGraph({ graphId, ...params}: { graphId: string; name?: string; _unit?: string; color?: Color; _timezone?: string; purgeCacheURLs?: string[]; _selfSuffcient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
+  public async updateGraph({ graphId, ...params}: { graphId: string; name?: string; unit?: string; color?: Color; timezone?: string; purgeCacheURLs?: string[]; selfSuffcient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
