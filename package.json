@@ -11,8 +11,13 @@
   "files": [
     "dist"
   ],
-  "repository": "ssh://git@github.com/mika-f/pixela.js.git",
-  "author": "Mikazuki <mikazuki_fuyuno@outlook.com>",
+  "repository": "https://github.com/mika-f/pixela.js.git",
+  "homepage": "https://github.com/mika-f/pixela.js",
+  "author": {
+    "name": "Fuyuno Mikazuki",
+    "email": "mikazuki_fuyuno@outlook.com",
+    "url": "https://mochizuki.dev"
+  },
   "license": "MIT",
   "private": false,
   "scripts": {
