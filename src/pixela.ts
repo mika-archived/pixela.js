@@ -1,9 +1,9 @@
-import ky from "ky-universal";
+import axios, { AxiosInstance, AxiosError } from "axios";
 
 const PIXELA_VERSION = "0.1.0";
 
 type Color = "shibafu" | "momiji" | "sora" | "ichou" | "ajisai" | "kuro";
-type Dictionary = { [key: string]: string | number };
+type Dictionary = { [key: string]: any };
 type DisplayMode = "short" | "line";
 type InvokeType = "increment" | "decrement";
 type Pixel = { quantity: number; optionalData: any };
@@ -13,6 +13,7 @@ type SelfSufficient = "increment" | "decrement" | "none";
 type Type = "int" | "float";
 type Webhooks = { webhooks: WebhookResponse[] };
 type WebhookResponse = { webhookHash: string } & Response;
+type YesNoBoolean = "yes" | "no" | boolean;
 
 type Graph = {
   id: string;
@@ -37,46 +38,56 @@ type Stats = {
 };
 
 export class Pixela {
-  private readonly headers: {};
   private readonly username: string;
-  private readonly token: string;
-  private readonly client: typeof ky;
+  private readonly client: AxiosInstance;
+  private token: string;
 
   public constructor(username: string, token: string) {
-    this.headers = { "User-Agent": `Pixela.js/${PIXELA_VERSION}`, "X-USER-TOKEN": token };
     this.username = username;
     this.token = token;
-    this.client = ky.create({ prefixUrl: "https://pixe.la" });
+    this.client = axios.create({ baseURL: "https://pixe.la" });
+    this.client.interceptors.request.use(request => {
+      request.headers["User-Agent"] = `Pixela.js/${PIXELA_VERSION}`;
+      request.headers["X-USER-TOKEN"] = this.token;
+
+      return request;
+    });
   }
 
-  private async get<T>(url: string, searchParams?: string | Dictionary): Promise<T> {
-    const response = await this.client.get(url, { headers: this.headers, searchParams });
-    return (await response.json()) as T;
+  private async get<T>(url: string, params?: Dictionary): Promise<T> {
+    const response = await this.client.get<T>(url, { params }).catch((err: AxiosError<T>) => err.response!);
+    return response.data;
   }
 
-  private async post<T>(url: string, body?: any): Promise<T> {
-    const response = await this.client.post(url, { json: body, headers: this.headers });
-    return (await response.json()) as T;
+  private async post<T>(url: string, params?: any): Promise<T> {
+    const response = await this.client.post<T>(url, params).catch((err: AxiosError<T>) => err.response!);
+    return response.data;
   }
 
-  private async put<T>(url: string, body?: any): Promise<T> {
-    const response = await this.client.put(url, { json: body, headers: this.headers });
-    return (await response.json()) as T;
+  private async put<T>(url: string, params?: any): Promise<T> {
+    const response = await this.client.put<T>(url, params).catch((err: AxiosError<T>) => err.response!);
+    return response.data;
   }
 
   private async delete<T>(url: string): Promise<T> {
-    const response = await this.client.delete(url, { headers: this.headers });
-    return (await response.json()) as T;
+    const response = await this.client.delete<T>(url).catch((err: AxiosError<T>) => err.response!);
+    return response.data;
   }
 
   //#region User
 
-  public async createUser(params: { agreeTermsOfService: boolean; notMinor: boolean; thanksCode?: string }): Promise<Response> {
+  public async createUser(params: { agreeTermsOfService: YesNoBoolean; notMinor: YesNoBoolean; thanksCode?: string }): Promise<Response> {
+    if (typeof params.agreeTermsOfService === "boolean") params.agreeTermsOfService = params.agreeTermsOfService ? "yes" : "no";
+    if (typeof params.notMinor === "boolean") params.notMinor = params.notMinor ? "yes" : "no";
+
     return await this.post<Response>("/v1/users", Object.assign({ token: this.token, username: this.username }, params));
   }
 
   public async updateUser(params: { newToken: string; thanksCode?: string }): Promise<Response> {
-    return await this.put<Response>(`/v1/users/${this.username}`, params);
+    const response = await this.put<Response>(`/v1/users/${this.username}`, params);
+    if (response.isSuccess) this.token = params.newToken;
+
+    return response;
   }
 
   public async deleteUser(): Promise<Response> {
@@ -96,13 +107,13 @@ export class Pixela {
     return await this.get<Graph[]>(`/v1/users/${this.username}/graphs`);
   }
 
-  public async getGraphSvg({ graphId, ...params }: { graphId: string; date: string; mode: DisplayMode }): Promise<string> {
-    const response = await this.client.get(`/v1/users/${this.username}/graphs/${graphId}`, { searchParams: params as any });
-    return await response.text();
+  public async getGraphSvg({ graphId, ...params }: { graphId: string; date?: string; mode?: DisplayMode }): Promise<string> {
+    const response = await this.client.get<string>(`/v1/users/${this.username}/graphs/${graphId}`, { params });
+    return response.data;
   }
 
   // prettier-ignore
-  public async updateGraph({ graphId, ...params}: { graphId: string; name?: string; unit?: string; color?: Color; timezone?: string; purgeCacheURLs?: string[]; selfSuffcient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
+  public async updateGraph({ graphId, ...params}: { graphId: string; name?: string; unit?: string; color?: Color; timezone?: string; purgeCacheURLs?: string[]; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
@@ -122,7 +133,9 @@ export class Pixela {
 
   //#region Pixel
 
-  public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: number; optionalData: any }): Promise<Response> {
+  public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: number | string; optionalData?: any }): Promise<Response> {
+    if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+
     return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
@@ -130,7 +143,9 @@ export class Pixela {
     return await this.get<Pixel>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
   }
 
-  public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: number; optionalData: any }): Promise<Response> {
+  public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: number | string; optionalData?: any }): Promise<Response> {
+    if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`, params);
   }
 
@@ -151,7 +166,7 @@ export class Pixela {
   //#region Webhook
 
   public async createWebhook(params: { graphId: string; type: InvokeType }): Promise<WebhookResponse> {
-    return await this.post<WebhookResponse>(`/v1/users/${this.username}/graphs/webooks`, params);
+    return await this.post<WebhookResponse>(`/v1/users/${this.username}/webhooks`, params);
   }
 
   public async getWebhooks(): Promise<Webhooks> {
