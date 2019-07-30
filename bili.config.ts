@@ -10,6 +10,10 @@ const config: Config = {
     typescript2: {
       cacheRoot: "./.cache"
     }
+  },
+  externals: ["axios"],
+  globals: {
+    axios: "axios"
   }
 };
 
