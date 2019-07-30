@@ -4,7 +4,7 @@
   "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
   "main": "dist/index.min.js",
-  "module": "dist/index.esm.minjs",
+  "module": "dist/index.esm.min.js",
   "types": "dist/index.d.ts",
   "jsdelivr": "dist/index.umd.min.js",
   "unpkg": "dist/index.umd.min.js",
@@ -22,7 +22,8 @@
   "private": false,
   "scripts": {
     "prebuild": "rm -r ./dist",
-    "build": "bili"
+    "build": "bili",
+    "prepublishOnly": "build"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
