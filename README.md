@@ -12,8 +12,28 @@ Pixela API for JavaScript written in TypeScript.
 yarn add @mikazuki/pixela
 ```
 
+CDN : [UNPKG](https://unpkg.com/@mikazuki/pixela) | [jsDelivr](https://cdn.jsdelivr.net/npm/@mikazuki/pixela)
+
 
 ## How to use
+
+### In Browser
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mikazuki/pixela"></script>
+<script>
+const client = new window.Pixela.Pixela("YOUR_NAME", "YOUR_TOKEN");
+client.incrementPixel("graph_id").then(() => {
+  console.log("Increment Pixel!");
+}).catch(() => {
+  console.log("Error!");
+});
+</script>
+```
+
+
+### In Node.js
 
 ```typescript
 import { Pixela } from "@mikazuki/pixela";

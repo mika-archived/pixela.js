@@ -1,6 +1,6 @@
 {
   "name": "@mikazuki/pixela",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
   "main": "dist/index.min.js",
@@ -23,7 +23,7 @@
   "scripts": {
     "prebuild": "rm -r ./dist",
     "build": "bili",
-    "prepublishOnly": "build"
+    "prepublishOnly": "yarn run build"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
