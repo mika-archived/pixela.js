@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
-const PIXELA_VERSION = "0.1.0";
+const PIXELA_VERSION = "0.1.2";
 
 type Color = "shibafu" | "momiji" | "sora" | "ichou" | "ajisai" | "kuro";
 type Dictionary = { [key: string]: any };
