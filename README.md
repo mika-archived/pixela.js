@@ -1,7 +1,7 @@
 # Pixela.js
 
-![GitHub](https://img.shields.io/github/license/mika-f/pixela.js?style=flat-square)
-![npm (scoped)](https://img.shields.io/npm/v/@mikazuki/pixela?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/mika-f/pixela.js?style=flat-square)](./LICENSE)
+[![npm (scoped)](https://img.shields.io/npm/v/@mikazuki/pixela?style=flat-square)](https://www.npmjs.com/package/@mikazuki/pixela)
 
 Pixela API for JavaScript written in TypeScript.
 
