@@ -1,3 +1,3 @@
 import { Pixela } from "./pixela";
 
-export { Pixela };
+export default Pixela;
