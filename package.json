@@ -1,24 +1,32 @@
 {
   "name": "@mikazuki/pixela",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.min.js",
+  "module": "dist/index.esm.min.js",
   "types": "dist/index.d.ts",
   "jsdelivr": "dist/index.umd.min.js",
   "unpkg": "dist/index.umd.min.js",
   "files": [
     "dist"
   ],
-  "repository": "ssh://git@github.com/mika-f/pixela.js.git",
-  "author": "Mikazuki <mikazuki_fuyuno@outlook.com>",
+  "repository": "https://github.com/mika-f/pixela.js.git",
+  "homepage": "https://github.com/mika-f/pixela.js",
+  "author": {
+    "name": "Fuyuno Mikazuki",
+    "email": "mikazuki_fuyuno@outlook.com",
+    "url": "https://mochizuki.dev"
+  },
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "bili"
+    "prebuild": "rm -r ./dist",
+    "build": "bili",
+    "prepublishOnly": "yarn run build"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/node": "^12.6.8",
     "bili": "^4.8.1",
     "eslint": "^6.1.0",
@@ -30,5 +38,8 @@
     "rollup-plugin-typescript2": "^0.22.0",
     "tslib": "^1.10.0",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "axios": "^0.19.0"
   }
 }
