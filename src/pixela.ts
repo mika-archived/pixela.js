@@ -2,18 +2,29 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 
 const PIXELA_VERSION = "0.1.2";
 
+type Channels = { channels: Channel[] };
 type Color = "shibafu" | "momiji" | "sora" | "ichou" | "ajisai" | "kuro";
+type Condition = ">" | "=" | "<" | "multipleOf";
 type Dictionary = { [key: string]: any };
 type DisplayMode = "short" | "line";
+type Graphs = { graphs: Graph[] };
 type InvokeType = "increment" | "decrement";
+type Notifications = { notifications: Notification };
+type NotificationTarget = "quantity";
 type Pixel = { quantity: number; optionalData: any };
 type PixelDates = { pixels: string[] };
+type PixelaNumber = string | number;
 type Response = { message: string; isSuccess: boolean };
 type SelfSufficient = "increment" | "decrement" | "none";
 type Type = "int" | "float";
 type Webhooks = { webhooks: WebhookResponse[] };
 type WebhookResponse = { webhookHash: string } & Response;
 type YesNoBoolean = "yes" | "no" | boolean;
+
+type Channel = {
+  id: string;
+  name: string;
+} & SlackChannel;
 
 type Graph = {
   id: string;
@@ -28,6 +39,14 @@ type Graph = {
   publishOptionalData: boolean;
 };
 
+type Notification = {
+  id: string;
+  name: string;
+  target: NotificationTarget;
+  threshold: string;
+  channelId: string;
+};
+
 type Stats = {
   totalPixelsCount: number;
   maxQuantity: number;
@@ -35,6 +54,11 @@ type Stats = {
   totalQuantity: number;
   avgQuantity: number;
   todaysQuantity: number;
+};
+
+type SlackChannel = {
+  type: "slack";
+  detail: { url: string; userName: string; channelName: string };
 };
 
 export class Pixela {
@@ -96,15 +120,35 @@ export class Pixela {
 
   //#endregion
 
+  //#region Channel
+
+  public async createChannel(params: { id: string; name: string } & SlackChannel): Promise<Response> {
+    return await this.post<Response>(`/v1/users/${this.username}/channels`, params);
+  }
+
+  public async getChannels(): Promise<Channels> {
+    return await this.get<Channels>(`/v1/users/${this.username}/channels`);
+  }
+
+  public async updateChannel({ channelId, ...params }: { channelId: string; name?: string } & Partial<SlackChannel>): Promise<Response> {
+    return await this.put<Response>(`/v1/users/${this.username}/channels/${channelId}`, params);
+  }
+
+  public async deleteChannel({ channelId }: { channelId: string }): Promise<Response> {
+    return await this.delete<Response>(`/v1/users/${this.username}/${channelId}`);
+  }
+
+  //#endregion
+
   //#region Graph
 
   // prettier-ignore
-  public async createGraph(params: { id: string; name: string; unit: string; type: Type; color: Color; timezone?: string; isSecret?: boolean; publishOptionalData?: boolean }): Promise<Response> {
+  public async createGraph(params: { id: string; name: string; unit: string; type: Type; color: Color; timezone?: string; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean }): Promise<Response> {
     return await this.post<Response>(`/v1/users/${this.username}/graphs`, params);
   }
 
-  public async getGraphs(): Promise<Graph[]> {
-    return await this.get<Graph[]>(`/v1/users/${this.username}/graphs`);
+  public async getGraphs(): Promise<Graphs> {
+    return await this.get<Graphs>(`/v1/users/${this.username}/graphs`);
   }
 
   public async getGraphSvg({ graphId, ...params }: { graphId: string; date?: string; mode?: DisplayMode }): Promise<string> {
@@ -122,7 +166,7 @@ export class Pixela {
   }
 
   public async getPixelDates({ graphId, ...params }: { graphId: string; from?: string; to?: string }): Promise<PixelDates> {
-    return await this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}`, params as any);
+    return await this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
   public async getStats(graphId: string): Promise<Stats> {
@@ -133,7 +177,7 @@ export class Pixela {
 
   //#region Pixel
 
-  public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: number | string; optionalData?: any }): Promise<Response> {
+  public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
 
     return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
@@ -143,7 +187,7 @@ export class Pixela {
     return await this.get<Pixel>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
   }
 
-  public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: number | string; optionalData?: any }): Promise<Response> {
+  public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
 
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`, params);
@@ -159,6 +203,32 @@ export class Pixela {
 
   public async deletePixel({ graphId, date }: { graphId: string; date: string }): Promise<Response> {
     return await this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
+  }
+
+  //#endregion
+
+  //#region Notification
+
+  // prettier-ignore
+  public async createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelId: string }): Promise<Response> {
+    if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
+
+    return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications`, params);
+  }
+
+  public async getNotifications(graphId: string): Promise<Notifications> {
+    return await this.get<Notifications>(`/v1/users/${this.username}/graphs/${graphId}/notifications`);
+  }
+
+  // prettier-ignore
+  public async updateNotification({ graphId, notificationId, ...params }: { graphId: string; notificationId: string; name?: string; target?: NotificationTarget; condition?: Condition; threshold?: PixelaNumber; channelId?: string }): Promise<Response> {
+    if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
+
+    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`, params);
+  }
+
+  public async deleteNotification({ graphId, notificationId }: { graphId: string; notificationId: string }): Promise<Response> {
+    return await this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`);
   }
 
   //#endregion
