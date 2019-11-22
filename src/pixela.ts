@@ -74,6 +74,10 @@ export class Pixela {
       request.headers["User-Agent"] = `Pixela.js/${PIXELA_VERSION}`;
       request.headers["X-USER-TOKEN"] = this.token;
 
+      if ((request.method === "post" || request.method === "put") && !request.data) {
+        request.headers["Content-Length"] = "0";
+      }
+
       return request;
     });
   }
@@ -135,7 +139,7 @@ export class Pixela {
   }
 
   public async deleteChannel({ channelId }: { channelId: string }): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/${channelId}`);
+    return await this.delete<Response>(`/v1/users/${this.username}/channels/${channelId}`);
   }
 
   //#endregion
@@ -166,7 +170,7 @@ export class Pixela {
   }
 
   public async getPixelDates({ graphId, ...params }: { graphId: string; from?: string; to?: string }): Promise<PixelDates> {
-    return await this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}`, params);
+    return await this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}/pixels`, params);
   }
 
   public async getStats(graphId: string): Promise<Stats> {
@@ -179,6 +183,7 @@ export class Pixela {
 
   public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+    if (params.optionalData) params.optionalData = JSON.stringify(params.optionalData);
 
     return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
@@ -189,6 +194,7 @@ export class Pixela {
 
   public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+    if (params.optionalData) params.optionalData = JSON.stringify(params.optionalData);
 
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`, params);
   }
@@ -210,7 +216,7 @@ export class Pixela {
   //#region Notification
 
   // prettier-ignore
-  public async createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelId: string }): Promise<Response> {
+  public async createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelID: string }): Promise<Response> {
     if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
 
     return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications`, params);
@@ -221,7 +227,7 @@ export class Pixela {
   }
 
   // prettier-ignore
-  public async updateNotification({ graphId, notificationId, ...params }: { graphId: string; notificationId: string; name?: string; target?: NotificationTarget; condition?: Condition; threshold?: PixelaNumber; channelId?: string }): Promise<Response> {
+  public async updateNotification({ graphId, notificationId, ...params }: { graphId: string; notificationId: string; name?: string; target?: NotificationTarget; condition?: Condition; threshold?: PixelaNumber; channelID?: string }): Promise<Response> {
     if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
 
     return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`, params);
@@ -235,7 +241,7 @@ export class Pixela {
 
   //#region Webhook
 
-  public async createWebhook(params: { graphId: string; type: InvokeType }): Promise<WebhookResponse> {
+  public async createWebhook(params: { graphID: string; type: InvokeType }): Promise<WebhookResponse> {
     return await this.post<WebhookResponse>(`/v1/users/${this.username}/webhooks`, params);
   }
 
