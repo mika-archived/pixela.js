@@ -1,6 +1,6 @@
 {
   "name": "@mikazuki/pixela",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "description": "Pixela API for JavaScript",
   "//": "reference: https://github.com/vuejs/vue/blob/dev/package.json",
   "main": "dist/index.min.js",
