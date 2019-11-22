@@ -12,7 +12,7 @@ Pixela API for JavaScript written in TypeScript.
 yarn add @mikazuki/pixela
 ```
 
-CDN : [UNPKG](https://unpkg.com/@mikazuki/pixela) | [jsDelivr](https://cdn.jsdelivr.net/npm/@mikazuki/pixela)
+CDN : [UNPKG](https://unpkg.com/@mikazuki/pixela) | [jsDelivr](https://cdn.jsdelivr.net/npm/@mikazuki/pixela) | [Pika CDN](https://cdn.pika.dev/@mikazuki/pixela)
 
 ## How to use
 
@@ -23,14 +23,13 @@ CDN : [UNPKG](https://unpkg.com/@mikazuki/pixela) | [jsDelivr](https://cdn.jsdel
 <script src="https://cdn.jsdelivr.net/npm/@mikazuki/pixela"></script>
 <script>
   const client = new window.Pixela("YOUR_NAME", "YOUR_TOKEN");
-  client
-    .incrementPixel("graph_id")
-    .then(() => {
-      console.log("Increment Pixel!");
-    })
-    .catch(() => {
-      console.log("Error!");
-    });
+  client.incrementPixel("graph_id").then(r => {
+    if (r.isSuccess) {
+      console.log("Pixel Incremented!");
+    } else {
+      console.log("Error");
+    }
+  });
 </script>
 ```
 
@@ -56,6 +55,6 @@ await client.incrementPixel(graphId);
 If you want to see real-world example?  
 Please check-out [Knockru/Crouton](https://github.com/Knockru/Crouton) repository!
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmika-f%2Fpixela.js.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmika-f%2Fpixela.js?ref=badge_large)
