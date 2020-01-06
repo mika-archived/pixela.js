@@ -24,7 +24,8 @@
     "prebuild": "rm -rf ./dist",
     "build": "bili",
     "prepublishOnly": "yarn run build",
-    "test": "jest"
+    "test": "jest",
+    "docs": "typedoc --out ./docs ./src"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -43,6 +44,7 @@
     "rollup-plugin-typescript2": "^0.22.0",
     "ts-jest": "^24.1.0",
     "tslib": "^1.10.0",
+    "typedoc": "^0.15.6",
     "typescript": "^3.5.3"
   },
   "dependencies": {
