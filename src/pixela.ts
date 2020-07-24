@@ -1,4 +1,6 @@
-import axios, { AxiosInstance, AxiosError } from "axios";
+/* eslint-disable import/prefer-default-export */
+import type { AxiosInstance, AxiosError } from "axios";
+import axios from "axios";
 
 const PIXELA_VERSION = "0.1.2";
 
@@ -63,14 +65,16 @@ type SlackChannel = {
 
 export class Pixela {
   private readonly username: string;
+
   private readonly client: AxiosInstance;
+
   private token: string;
 
   public constructor(username: string, token: string) {
     this.username = username;
     this.token = token;
     this.client = axios.create({ baseURL: "https://pixe.la" });
-    this.client.interceptors.request.use(request => {
+    this.client.interceptors.request.use((request) => {
       request.headers["User-Agent"] = `Pixela.js/${PIXELA_VERSION}`;
       request.headers["X-USER-TOKEN"] = this.token;
 
@@ -83,7 +87,9 @@ export class Pixela {
   }
 
   private async get<T>(url: string, params?: Dictionary): Promise<T> {
-    const response = await this.client.get<T>(url, { params }).catch((err: AxiosError<T>) => err.response!);
+    const response = await this.client
+      .get<T>(url, { params })
+      .catch((err: AxiosError<T>) => err.response!);
     return response.data;
   }
 
@@ -102,13 +108,15 @@ export class Pixela {
     return response.data;
   }
 
-  //#region User
+  // #region User
 
-  public async createUser(params: { agreeTermsOfService: YesNoBoolean; notMinor: YesNoBoolean; thanksCode?: string }): Promise<Response> {
+  public createUser(params: { agreeTermsOfService: YesNoBoolean; notMinor: YesNoBoolean; thanksCode?: string }): Promise<Response> {
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.agreeTermsOfService === "boolean") params.agreeTermsOfService = params.agreeTermsOfService ? "yes" : "no";
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.notMinor === "boolean") params.notMinor = params.notMinor ? "yes" : "no";
 
-    return await this.post<Response>("/v1/users", Object.assign({ token: this.token, username: this.username }, params));
+    return this.post<Response>("/v1/users", { token: this.token, username: this.username, ...params });
   }
 
   public async updateUser(params: { newToken: string; thanksCode?: string }): Promise<Response> {
@@ -118,41 +126,41 @@ export class Pixela {
     return response;
   }
 
-  public async deleteUser(): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}`);
+  public deleteUser(): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}`);
   }
 
-  //#endregion
+  // #endregion
 
-  //#region Channel
+  // #region Channel
 
-  public async createChannel(params: { id: string; name: string } & SlackChannel): Promise<Response> {
-    return await this.post<Response>(`/v1/users/${this.username}/channels`, params);
+  public createChannel(params: { id: string; name: string } & SlackChannel): Promise<Response> {
+    return this.post<Response>(`/v1/users/${this.username}/channels`, params);
   }
 
-  public async getChannels(): Promise<Channels> {
-    return await this.get<Channels>(`/v1/users/${this.username}/channels`);
+  public getChannels(): Promise<Channels> {
+    return this.get<Channels>(`/v1/users/${this.username}/channels`);
   }
 
-  public async updateChannel({ channelId, ...params }: { channelId: string; name?: string } & Partial<SlackChannel>): Promise<Response> {
-    return await this.put<Response>(`/v1/users/${this.username}/channels/${channelId}`, params);
+  public updateChannel({ channelId, ...params }: { channelId: string; name?: string } & Partial<SlackChannel>): Promise<Response> {
+    return this.put<Response>(`/v1/users/${this.username}/channels/${channelId}`, params);
   }
 
-  public async deleteChannel({ channelId }: { channelId: string }): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/channels/${channelId}`);
+  public deleteChannel({ channelId }: { channelId: string }): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}/channels/${channelId}`);
   }
 
-  //#endregion
+  // #endregion
 
-  //#region Graph
+  // #region Graph
 
   // prettier-ignore
-  public async createGraph(params: { id: string; name: string; unit: string; type: Type; color: Color; timezone?: string; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean }): Promise<Response> {
-    return await this.post<Response>(`/v1/users/${this.username}/graphs`, params);
+  public createGraph(params: { id: string; name: string; unit: string; type: Type; color: Color; timezone?: string; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean }): Promise<Response> {
+    return this.post<Response>(`/v1/users/${this.username}/graphs`, params);
   }
 
-  public async getGraphs(): Promise<Graphs> {
-    return await this.get<Graphs>(`/v1/users/${this.username}/graphs`);
+  public getGraphs(): Promise<Graphs> {
+    return this.get<Graphs>(`/v1/users/${this.username}/graphs`);
   }
 
   public async getGraphSvg({ graphId, ...params }: { graphId: string; date?: string; mode?: DisplayMode }): Promise<string> {
@@ -161,101 +169,111 @@ export class Pixela {
   }
 
   // prettier-ignore
-  public async updateGraph({ graphId, ...params}: { graphId: string; name?: string; unit?: string; color?: Color; timezone?: string; purgeCacheURLs?: string[]; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
-    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
+  public updateGraph({ graphId, ...params}: { graphId: string; name?: string; unit?: string; color?: Color; timezone?: string; purgeCacheURLs?: string[]; selfSufficient?: SelfSufficient; isSecret?: boolean; publishOptionalData?: boolean; }): Promise<Response> {
+    return this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
-  public async deleteGraph(graphId: string): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}`);
+  public deleteGraph(graphId: string): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}`);
   }
 
-  public async getPixelDates({ graphId, ...params }: { graphId: string; from?: string; to?: string }): Promise<PixelDates> {
-    return await this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}/pixels`, params);
+  public getPixelDates({ graphId, ...params }: { graphId: string; from?: string; to?: string }): Promise<PixelDates> {
+    return this.get<PixelDates>(`/v1/users/${this.username}/graphs/${graphId}/pixels`, params);
   }
 
-  public async getStats(graphId: string): Promise<Stats> {
-    return await this.get<Stats>(`/v1/users/${this.username}/graphs/${graphId}/stats`);
+  public getStats(graphId: string): Promise<Stats> {
+    return this.get<Stats>(`/v1/users/${this.username}/graphs/${graphId}/stats`);
   }
 
-  //#endregion
+  public stopwatch(graphId: string): Promise<Response> {
+    return this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/stopwatch`);
+  }
 
-  //#region Pixel
+  // #endregion
 
-  public async createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
+  // #region Pixel
+
+  public createPixel({ graphId, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+    // eslint-disable-next-line no-param-reassign
     if (params.optionalData) params.optionalData = JSON.stringify(params.optionalData);
 
-    return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
+    return this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}`, params);
   }
 
-  public async getPixel({ graphId, date }: { graphId: string; date: string }): Promise<Pixel> {
-    return await this.get<Pixel>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
+  public getPixel({ graphId, date }: { graphId: string; date: string }): Promise<Pixel> {
+    return this.get<Pixel>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
   }
 
   public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
+    // eslint-disable-next-line no-param-reassign
     if (params.optionalData) params.optionalData = JSON.stringify(params.optionalData);
 
-    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`, params);
+    return this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`, params);
   }
 
-  public async incrementPixel(graphId: string): Promise<Response> {
-    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/increment`);
+  public incrementPixel(graphId: string): Promise<Response> {
+    return this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/increment`);
   }
 
-  public async decrementPixel(graphId: string): Promise<Response> {
-    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/decrement`);
+  public decrementPixel(graphId: string): Promise<Response> {
+    return this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/decrement`);
   }
 
-  public async deletePixel({ graphId, date }: { graphId: string; date: string }): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
+  public deletePixel({ graphId, date }: { graphId: string; date: string }): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
   }
 
-  //#endregion
+  // #endregion
 
-  //#region Notification
+  // #region Notification
 
   // prettier-ignore
   public async createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelID: string }): Promise<Response> {
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
 
-    return await this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications`, params);
+    return this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications`, params);
   }
 
   public async getNotifications(graphId: string): Promise<Notifications> {
-    return await this.get<Notifications>(`/v1/users/${this.username}/graphs/${graphId}/notifications`);
+    return this.get<Notifications>(`/v1/users/${this.username}/graphs/${graphId}/notifications`);
   }
 
   // prettier-ignore
-  public async updateNotification({ graphId, notificationId, ...params }: { graphId: string; notificationId: string; name?: string; target?: NotificationTarget; condition?: Condition; threshold?: PixelaNumber; channelID?: string }): Promise<Response> {
+  public updateNotification({ graphId, notificationId, ...params }: { graphId: string; notificationId: string; name?: string; target?: NotificationTarget; condition?: Condition; threshold?: PixelaNumber; channelID?: string }): Promise<Response> {
+    // eslint-disable-next-line no-param-reassign
     if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
 
-    return await this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`, params);
+    return this.put<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`, params);
   }
 
-  public async deleteNotification({ graphId, notificationId }: { graphId: string; notificationId: string }): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`);
+  public deleteNotification({ graphId, notificationId }: { graphId: string; notificationId: string }): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications/${notificationId}`);
   }
 
-  //#endregion
+  // #endregion
 
-  //#region Webhook
+  // #region Webhook
 
-  public async createWebhook(params: { graphID: string; type: InvokeType }): Promise<WebhookResponse> {
-    return await this.post<WebhookResponse>(`/v1/users/${this.username}/webhooks`, params);
+  public createWebhook(params: { graphID: string; type: InvokeType }): Promise<WebhookResponse> {
+    return this.post<WebhookResponse>(`/v1/users/${this.username}/webhooks`, params);
   }
 
-  public async getWebhooks(): Promise<Webhooks> {
-    return await this.get<Webhooks>(`/v1/users/${this.username}/webhooks`);
+  public getWebhooks(): Promise<Webhooks> {
+    return this.get<Webhooks>(`/v1/users/${this.username}/webhooks`);
   }
 
-  public async invokeWebhook(webhookHash: string): Promise<Response> {
-    return await this.post<Response>(`/v1/users/${this.username}/webhooks/${webhookHash}`);
+  public invokeWebhook(webhookHash: string): Promise<Response> {
+    return this.post<Response>(`/v1/users/${this.username}/webhooks/${webhookHash}`);
   }
 
-  public async deleteWebhook(webhookHash: string): Promise<Response> {
-    return await this.delete<Response>(`/v1/users/${this.username}/webhooks/${webhookHash}`);
+  public deleteWebhook(webhookHash: string): Promise<Response> {
+    return this.delete<Response>(`/v1/users/${this.username}/webhooks/${webhookHash}`);
   }
 
-  //#endregion
+  // #endregion
 }
