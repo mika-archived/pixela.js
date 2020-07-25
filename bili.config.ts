@@ -8,7 +8,8 @@ const config: Config = {
   },
   plugins: {
     typescript2: {
-      cacheRoot: "./.cache"
+      cacheRoot: "./.cache",
+      tsconfig: "./tsconfig.build.json"
     }
   },
   externals: ["axios"],

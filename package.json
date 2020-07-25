@@ -33,7 +33,7 @@
     "@types/node": "^12.6.8",
     "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.7.0",
-    "bili": "^4.8.1",
+    "bili": "^5.0.5",
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-airbnb-typescript": "^9.0.0",
