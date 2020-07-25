@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import nock, { Scope } from "nock";
 
-import Pixela from "../src";
+import { Pixela } from "../src";
 
 beforeAll(() => {
   nock.disableNetConnect();
@@ -18,9 +19,11 @@ describe("pixela", () => {
 
   let client: Pixela;
 
-  beforeAll(() => (client = new Pixela(PIXELA_USER_NAME, PIXELA_USER_TOKEN)));
+  beforeAll(() => {
+    client = new Pixela(PIXELA_USER_NAME, PIXELA_USER_TOKEN);
+  });
 
-  //#region User
+  // #region User
 
   describe("createUser", () => {
     let scope: Scope;
@@ -60,10 +63,7 @@ describe("pixela", () => {
 
     // https://docs.pixe.la/entry/delete-user
     beforeAll(() => {
-      scope = nock(PIXELA_DOMAIN)
-        .delete(`/v1/users/${PIXELA_USER_NAME}`)
-        .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
-        .reply(200, { message: "Success.", isSuccess: true });
+      scope = nock(PIXELA_DOMAIN).delete(`/v1/users/${PIXELA_USER_NAME}`).matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN).reply(200, { message: "Success.", isSuccess: true });
     });
 
     it("successful", async () => {
@@ -72,9 +72,9 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  // #endregion
 
-  //#region Channel
+  // #region Channel
 
   describe("createChannel", () => {
     let scope: Scope;
@@ -86,7 +86,7 @@ describe("pixela", () => {
           id: "my-channel",
           name: "My slack channel",
           type: "slack",
-          detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" }
+          detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" },
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -97,7 +97,7 @@ describe("pixela", () => {
         id: "my-channel",
         name: "My slack channel",
         type: "slack",
-        detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" }
+        detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" },
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -117,9 +117,9 @@ describe("pixela", () => {
               id: "my-channel",
               name: "My slack channel",
               type: "slack",
-              detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" }
-            }
-          ]
+              detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" },
+            },
+          ],
         });
     });
 
@@ -138,7 +138,7 @@ describe("pixela", () => {
         .put(`/v1/users/${PIXELA_USER_NAME}/channels/my-channel`, {
           name: "My slack channel",
           type: "slack",
-          detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" }
+          detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" },
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -149,7 +149,7 @@ describe("pixela", () => {
         channelId: "my-channel",
         name: "My slack channel",
         type: "slack",
-        detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" }
+        detail: { url: "https://hooks.slack.com/services/T035DA4QD/B06LMAV40/xxxx", userName: "Pixela Notification", channelName: "pixela-notify" },
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -172,9 +172,9 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  // #endregion
 
-  //#region Graph
+  // #region Graph
 
   describe("createGraph", () => {
     let scope: Scope;
@@ -190,7 +190,7 @@ describe("pixela", () => {
           color: "shibafu",
           timezone: "Asia/Tokyo",
           isSecret: true,
-          publishOptionalData: true
+          publishOptionalData: true,
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -205,7 +205,7 @@ describe("pixela", () => {
         color: "shibafu",
         timezone: "Asia/Tokyo",
         isSecret: true,
-        publishOptionalData: true
+        publishOptionalData: true,
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -222,7 +222,7 @@ describe("pixela", () => {
         .reply(200, {
           graphs: [
             {
-              id: "${PIXELA_GRAPH_ID}",
+              id: `${PIXELA_GRAPH_ID}`,
               name: "graph-name",
               unit: "commit",
               type: "int",
@@ -231,9 +231,9 @@ describe("pixela", () => {
               purgeCacheURLs: ["https://camo.githubusercontent.com/xxx/xxxx"],
               selfSufficient: "increment",
               isSecret: false,
-              publishOptionalData: true
-            }
-          ]
+              publishOptionalData: true,
+            },
+          ],
         });
     });
 
@@ -266,17 +266,14 @@ describe("pixela", () => {
 
     // https://docs.pixe.la/entry/get-graph-stats
     beforeAll(() => {
-      scope = nock(PIXELA_DOMAIN)
-        .get(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/stats`)
-        .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
-        .reply(200, {
-          totalPixelsCount: 4,
-          maxQuantity: 7,
-          minQuantity: 4,
-          totalQuantity: 25,
-          avgQuantity: 6.25,
-          todaysQuantity: 3
-        });
+      scope = nock(PIXELA_DOMAIN).get(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/stats`).matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN).reply(200, {
+        totalPixelsCount: 4,
+        maxQuantity: 7,
+        minQuantity: 4,
+        totalQuantity: 25,
+        avgQuantity: 6.25,
+        todaysQuantity: 3,
+      });
     });
 
     it("successful", async () => {
@@ -297,7 +294,7 @@ describe("pixela", () => {
           color: "shibafu",
           timezone: "Asia/Tokyo",
           purgeCacheURLs: ["https://camo.githubusercontent.com/xxx/xxxx"],
-          publishOptionalData: true
+          publishOptionalData: true,
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -311,7 +308,7 @@ describe("pixela", () => {
         color: "shibafu",
         timezone: "Asia/Tokyo",
         purgeCacheURLs: ["https://camo.githubusercontent.com/xxx/xxxx"],
-        publishOptionalData: true
+        publishOptionalData: true,
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -352,9 +349,27 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  describe("stopwatch", () => {
+    let scope: Scope;
 
-  //#region Pixel
+    // https://docs.pixe.la/entry/post-stopwatch
+    beforeAll(() => {
+      scope = nock(PIXELA_DOMAIN)
+        .post(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/stopwatch`)
+        .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
+        .matchHeader("Content-Length", "0")
+        .reply(200, { message: "Stopwatch start successful.", isSuccess: true });
+    });
+
+    it("successful", async () => {
+      await client.stopwatch(PIXELA_GRAPH_ID);
+      expect(scope.isDone()).toBe(true);
+    });
+  });
+
+  // #endregion
+
+  // #region Pixel
 
   describe("createPixel", () => {
     let scope: Scope;
@@ -362,7 +377,7 @@ describe("pixela", () => {
     // https://docs.pixe.la/entry/post-pixel
     beforeAll(() => {
       scope = nock(PIXELA_DOMAIN)
-        .post(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}`, { date: "20180915", quantity: "5", optionalData: '{"key":"value"}' })
+        .post(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}`, { date: "20180915", quantity: "5", optionalData: JSON.stringify({ key: "value" }) })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
     });
@@ -381,7 +396,7 @@ describe("pixela", () => {
       scope = nock(PIXELA_DOMAIN)
         .get(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/20180915`)
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
-        .reply(200, { quantity: "5", optionalData: '{"key":"value"}' });
+        .reply(200, { quantity: "5", optionalData: JSON.stringify({ key: "value" }) });
     });
 
     it("successful", async () => {
@@ -396,7 +411,7 @@ describe("pixela", () => {
     // https://docs.pixe.la/entry/put-pixel
     beforeAll(() => {
       scope = nock(PIXELA_DOMAIN)
-        .put(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/20180915`, { quantity: "7", optionalData: '{"key":"value"}' })
+        .put(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/20180915`, { quantity: "7", optionalData: JSON.stringify({ key: "value" }) })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
     });
@@ -460,9 +475,9 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  // #endregion
 
-  //#region Notification
+  // #region Notification
 
   describe("createNotification", () => {
     let scope: Scope;
@@ -476,7 +491,7 @@ describe("pixela", () => {
           target: "quantity",
           condition: ">",
           threshold: "5",
-          channelID: "my-channel"
+          channelID: "my-channel",
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -490,7 +505,7 @@ describe("pixela", () => {
         target: "quantity",
         condition: ">",
         threshold: 5,
-        channelID: "my-channel"
+        channelID: "my-channel",
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -505,7 +520,7 @@ describe("pixela", () => {
         .get(`/v1/users/${PIXELA_USER_NAME}/graphs/${PIXELA_GRAPH_ID}/notifications`)
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, {
-          notifications: [{ id: "my-notify-rule", name: "my notify rule", target: "quantity", condition: ">", threshold: "5", channelID: "my-channel" }]
+          notifications: [{ id: "my-notify-rule", name: "my notify rule", target: "quantity", condition: ">", threshold: "5", channelID: "my-channel" }],
         });
     });
 
@@ -526,7 +541,7 @@ describe("pixela", () => {
           target: "quantity",
           condition: ">",
           threshold: "5",
-          channelID: "my-channel"
+          channelID: "my-channel",
         })
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, { message: "Success.", isSuccess: true });
@@ -540,7 +555,7 @@ describe("pixela", () => {
         target: "quantity",
         condition: ">",
         threshold: 5,
-        channelID: "my-channel"
+        channelID: "my-channel",
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -563,9 +578,9 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  // #endregion
 
-  //#region Webhook
+  // #region Webhook
 
   describe("createWebhook", () => {
     let scope: Scope;
@@ -593,7 +608,7 @@ describe("pixela", () => {
         .get(`/v1/users/${PIXELA_USER_NAME}/webhooks`)
         .matchHeader("X-USER-TOKEN", PIXELA_USER_TOKEN)
         .reply(200, {
-          webhooks: [{ webhookHash: "<WebhookHashString>", graphID: "test-graph", type: "increment" }]
+          webhooks: [{ webhookHash: "<WebhookHashString>", graphID: "test-graph", type: "increment" }],
         });
     });
 
@@ -638,5 +653,5 @@ describe("pixela", () => {
     });
   });
 
-  //#endregion
+  // #endregion
 });
