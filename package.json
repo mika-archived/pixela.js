@@ -25,7 +25,8 @@
     "build": "bili",
     "prepublishOnly": "yarn run build",
     "test": "jest",
-    "docs": "typedoc --out ./docs ./src"
+    "docs": "typedoc --out ./docs ./src",
+    "lint": "eslint ./src"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
