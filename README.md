@@ -7,6 +7,10 @@
 
 Pixela API for JavaScript written in TypeScript.
 
+## Requirements
+
+- Node.js >= 10
+
 ## Install
 
 ```
@@ -24,7 +28,7 @@ CDN : [UNPKG](https://unpkg.com/@mikazuki/pixela) | [jsDelivr](https://cdn.jsdel
 <script src="https://cdn.jsdelivr.net/npm/@mikazuki/pixela"></script>
 <script>
   const client = new window.Pixela("YOUR_NAME", "YOUR_TOKEN");
-  client.incrementPixel("graph_id").then(r => {
+  client.incrementPixel("graph_id").then((r) => {
     if (r.isSuccess) {
       console.log("Pixel Incremented!");
     } else {
