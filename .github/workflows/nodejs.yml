@@ -19,10 +19,11 @@ jobs:
       - name: Use Yarn
         run: |
           curl -o- -L https://yarnpkg.com/install.sh | bash
-      - name: yarn install, build, and test
+      - name: yarn install, build, test and lint
         run: |
           yarn install --frozen-lockfile
           yarn run build
           yarn test
+          yarn run lint
         env:
           CI: true
