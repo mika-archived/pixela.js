@@ -206,7 +206,7 @@ export class Pixela {
     return this.get<Pixel>(`/v1/users/${this.username}/graphs/${graphId}/${date}`);
   }
 
-  public async updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
+  public updatePixel({ graphId, date, ...params }: { graphId: string; date: string; quantity: PixelaNumber; optionalData?: any }): Promise<Response> {
     // eslint-disable-next-line no-param-reassign
     if (typeof params.quantity === "number") params.quantity = params.quantity.toString();
     // eslint-disable-next-line no-param-reassign
@@ -232,14 +232,14 @@ export class Pixela {
   // #region Notification
 
   // prettier-ignore
-  public async createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelID: string }): Promise<Response> {
+  public createNotification({ graphId, ...params }: { graphId: string; id: string; name: string; target: NotificationTarget; condition: Condition; threshold: PixelaNumber; channelID: string }): Promise<Response> {
     // eslint-disable-next-line no-param-reassign
     if (typeof params.threshold === "number") params.threshold = params.threshold.toString();
 
     return this.post<Response>(`/v1/users/${this.username}/graphs/${graphId}/notifications`, params);
   }
 
-  public async getNotifications(graphId: string): Promise<Notifications> {
+  public getNotifications(graphId: string): Promise<Notifications> {
     return this.get<Notifications>(`/v1/users/${this.username}/graphs/${graphId}/notifications`);
   }
 
